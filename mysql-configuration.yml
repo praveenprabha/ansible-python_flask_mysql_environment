@@ -1,0 +1,69 @@
+-
+  name: MySQL Configuration for PythonFlask Application
+  hosts: new_ansible_target_4
+  tasks:
+
+    - name: Install MySQL-python for working of mysql_db ansible module
+      yum:
+        name: MySQL-python
+        state: present
+
+    - name: Create Database
+      mysql_db:
+        name: pythonflask_app
+        state: present
+        login_user: root
+        login_host: localhost
+
+    - name: Copy SQL file to Remote Host
+      copy:
+        src: pythonflask_app.sql
+        dest: /tmp/pythonflask_app.sql
+
+    - name: Import Tables from /tmp/pythonflask_app.sql
+      mysql_db:
+        state: import
+        name: pythonflask_app
+        target: /tmp/pythonflask_app.sql
+    
+    - name: Remove the SQL file
+      file:
+        path: /tmp/pythonflask_app.sql
+        state: absent
+    
+    # Installing zlib-1.2.11 from source to fix "MODULE FAILURE" issue with mysql_user module.
+
+    - name: Download and unarchive zlib-1.2.11 from https://zlib.net/zlib-1.2.11.tar.gz
+      unarchive:
+        src: https://zlib.net/zlib-1.2.11.tar.gz
+        dest: /tmp
+        remote_src: yes
+
+    - name: Configuring of downloaded zlib package
+      command: './configure --shared --prefix=/usr'
+      args:
+        chdir: /tmp/zlib-1.2.11/
+
+    - name: \"make\" of downloaded zlib package
+      command: 'make'
+      args:
+        chdir: /tmp/zlib-1.2.11/
+
+    - name: \"make install\" of downloaded zlib package
+      command: 'make install'
+      args:
+        chdir: /tmp/zlib-1.2.11/
+
+
+    - name: Remove the zlib directory
+      file:
+        path: /tmp/zlib-1.2.11
+        state: absent
+
+    - name: Creating DB user and privileges
+      mysql_user:
+              name: db_user
+              password: 'passw0rd'
+              host: localhost
+              priv: 'pythonflask_app.*:ALL,GRANT'
+              state: present

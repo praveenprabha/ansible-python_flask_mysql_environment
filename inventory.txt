@@ -1,0 +1,7 @@
+new_ansible_target_1 ansible_host=192.168.0.38 ansible_connection=ssh ansible_user=root ansible_ssh_pass=osboxes.org
+
+new_ansible_target_3 ansible_host=192.168.0.58 ansible_connection=ssh ansible_user=root ansible_ssh_pass=osboxes.org
+
+new_ansible_target_4  ansible_host=192.168.0.61 ansible_connection=ssh ansible_user=root ansible_ssh_pass=osboxes.org
+
+

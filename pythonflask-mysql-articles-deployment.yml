@@ -1,0 +1,19 @@
+-
+  name: Clone application from https://github.com/praveenprabha/pythonflask-mysql-articles.git
+  hosts: new_ansible_target_4
+  tasks:
+    - name: Creat a project directory under /root
+      file:
+        path: /root/projects
+        state: directory
+        mode: '755'
+
+    - name: Clone https://github.com/praveenprabha/pythonflask-mysql-articles.git
+      git:
+        repo: https://github.com/praveenprabha/pythonflask-mysql-articles.git
+        dest: /root/projects/pythonflask-mysql-articles
+
+    - name: Start PythonFlask Application
+      command: 'FLASK_APP=application.py flask run --host=0.0.0.0 --port=8080'
+      args:
+        chdir: /root/projects/pythonflask-mysql-articles/
